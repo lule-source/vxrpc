@@ -3,16 +3,16 @@
 #include <semaphore.h>
 #include <iostream>
 
-// 全局的watcher观察器 
+// 全局的watcher观察器
 void global_watcher(zhandle_t *zh, int type,
-                   int state, const char *path, void *watcherCtx)
+					int state, const char *path, void *watcherCtx)
 {
-    if (type == ZOO_SESSION_EVENT)  
+	if (type == ZOO_SESSION_EVENT)
 	{
-		if (state == ZOO_CONNECTED_STATE) 
+		if (state == ZOO_CONNECTED_STATE)
 		{
-			sem_t *sem = (sem_t*)zoo_get_context(zh);
-            sem_post(sem);
+			sem_t *sem = (sem_t *)zoo_get_context(zh);
+			sem_post(sem);
 		}
 	}
 }
@@ -23,43 +23,43 @@ ZkClient::ZkClient() : m_zhandle(nullptr)
 
 ZkClient::~ZkClient()
 {
-    if (v_zhandle != nullptr)
-    {
-        zookeeper_close(v_zhandle); // 关闭句柄，释放资源
-    }
+	if (v_zhandle != nullptr)
+	{
+		zookeeper_close(v_zhandle); // 关闭句柄，释放资源
+	}
 }
 
 void ZkClient::Start()
 {
-    std::string host = VxrpcApplication::GetInstance().GetConfig().Load("zookeeperip");
-    std::string port = VxrpcApplication::GetInstance().GetConfig().Load("zookeeperport");
-    std::string connstr = host + ":" + port;
-    
-    v_zhandle = zookeeper_init(connstr.c_str(), global_watcher, 30000, nullptr, nullptr, 0);
-    if (nullptr == v_zhandle) 
-    {
-        std::cout << "zookeeper_init error!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+	std::string host = VxrpcApplication::GetInstance().GetConfig().Load("zookeeperip");
+	std::string port = VxrpcApplication::GetInstance().GetConfig().Load("zookeeperport");
+	std::string connstr = host + ":" + port;
 
-    sem_t sem;
-    sem_init(&sem, 0, 0);
-    zoo_set_context(v_zhandle, &sem);
+	v_zhandle = zookeeper_init(connstr.c_str(), global_watcher, 30000, nullptr, nullptr, 0);
+	if (nullptr == v_zhandle)
+	{
+		std::cout << "zookeeper_init error!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
-    sem_wait(&sem);
-    std::cout << "zookeeper_init success!" << std::endl;
+	sem_t sem;
+	sem_init(&sem, 0, 0);
+	zoo_set_context(v_zhandle, &sem);
+
+	sem_wait(&sem);
+	std::cout << "zookeeper_init success!" << std::endl;
 }
 
 void ZkClient::Create(const char *path, const char *data, int datalen, int state)
 {
-    char path_buffer[128];
-    int bufferlen = sizeof(path_buffer);
-    int flag;
+	char path_buffer[128];
+	int bufferlen = sizeof(path_buffer);
+	int flag;
 	flag = zoo_exists(v_zhandle, path, 0, nullptr);
 	if (ZNONODE == flag) // 表示path的znode节点不存在
 	{
 		flag = zoo_create(v_zhandle, path, data, datalen,
-			&ZOO_OPEN_ACL_UNSAFE, state, path_buffer, bufferlen);
+						  &ZOO_OPEN_ACL_UNSAFE, state, path_buffer, bufferlen);
 		if (flag == ZOK)
 		{
 			std::cout << "znode create success... path:" << path << std::endl;
@@ -75,7 +75,7 @@ void ZkClient::Create(const char *path, const char *data, int datalen, int state
 
 std::string ZkClient::GetData(const char *path)
 {
-    char buffer[64];
+	char buffer[64];
 	int bufferlen = sizeof(buffer);
 	int flag = zoo_get(v_zhandle, path, 0, buffer, &bufferlen, nullptr);
 	if (flag != ZOK)
