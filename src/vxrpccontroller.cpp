@@ -2,8 +2,8 @@
 
 MprpcController::MprpcController()
 {
-    m_failed = false;
-    m_errText = "";
+    v_failed = false;
+    v_errText = "";
 }
 
 void MprpcController::Reset()

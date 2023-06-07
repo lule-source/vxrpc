@@ -50,9 +50,9 @@ void RpcProvider::Run()
     {
         std::string service_path = "/" + sp.first;
         zkCli.Create(service_path.c_str(), nullptr, 0);
-        for (auto &mp : sp.second.m_methodMap)
+        for (auto &vp : sp.second.m_methodMap)
         {
-            std::string method_path = service_path + "/" + mp.first;
+            std::string method_path = service_path + "/" + vp.first;
             char method_path_data[128] = {0};
             sprintf(method_path_data, "%s:%d", ip.c_str(), port);
             // ZOO_EPHEMERAL表示z一个临时性节点

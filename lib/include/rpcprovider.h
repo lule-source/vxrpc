@@ -19,19 +19,19 @@ public:
     void Run();
 
 private:
-    muduo::net::EventLoop m_eventLoop;
+    muduo::net::EventLoop v_eventLoop;
 
     struct ServiceInfo
     {
-        google::protobuf::Service *m_service; 
-        std::unordered_map<std::string, const google::protobuf::MethodDescriptor*> m_methodMap; 
+        google::protobuf::Service *v_service;
+        std::unordered_map<std::string, const google::protobuf::MethodDescriptor *> v_methodMap;
     };
-    std::unordered_map<std::string, ServiceInfo> m_serviceMap;
+    std::unordered_map<std::string, ServiceInfo> v_serviceMap;
 
     // 新的socket连接回调
-    void OnConnection(const muduo::net::TcpConnectionPtr&);
+    void OnConnection(const muduo::net::TcpConnectionPtr &);
     // 已建立连接用户的读写事件回调
-    void OnMessage(const muduo::net::TcpConnectionPtr&, muduo::net::Buffer*, muduo::Timestamp);
+    void OnMessage(const muduo::net::TcpConnectionPtr &, muduo::net::Buffer *, muduo::Timestamp);
     // 用于序列化rpc的响应和网络发送
-    void SendRpcResponse(const muduo::net::TcpConnectionPtr&, google::protobuf::Message*);
+    void SendRpcResponse(const muduo::net::TcpConnectionPtr &, google::protobuf::Message *);
 };
